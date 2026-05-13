@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>PRP 1046 — Tutorial 9: Special Probability Distributions</title>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- MathJax -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  svg: { fontCache: 'global' },
+  startup: {
+    ready: () => { MathJax.startup.defaultReady(); window.mathJaxReady = true; }
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+<style>
+  :root {
+    --bg: #EEF2F7;
+    --bg-2: #E4EAF2;
+    --card: #FFFFFF;
+    --card-2: #FBFCFE;
+    --navy: #1E3A5F;
+    --navy-2: #2B4A75;
+    --teal: #4A8B8E;
+    --teal-2: #5FA3A6;
+    --text: #1F2937;
+    --text-2: #4B5563;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --border-2: #D1D9E2;
+    --accent-soft: #DDEAEC;
+    --answer-bg: #EDF7F7;
+    --answer-border: #B7D7D8;
+    --shadow-sm: 0 2px 8px rgba(30, 58, 95, 0.06);
+    --shadow-md: 0 8px 24px rgba(30, 58, 95, 0.08);
+    --shadow-lg: 0 20px 60px rgba(30, 58, 95, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 10% 20%, rgba(74, 139, 142, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(30, 58, 95, 0.07) 0%, transparent 40%),
+      linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 100%);
+    position: relative;
+  }
+
+  /* Floating math symbols background */
+  .float-bg {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .float-bg span {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(30, 58, 95, 0.06);
+    font-size: 3rem;
+    font-weight: 500;
+    user-select: none;
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(-120vh) rotate(180deg); opacity: 0; }
+  }
+
+  /* ===== PASSWORD SCREEN ===== */
+  .password-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(74, 139, 142, 0.18) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(30, 58, 95, 0.18) 0%, transparent 50%),
+      linear-gradient(135deg, #DDE6F0 0%, #C8D6E4 100%);
+  }
+
+  .password-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+    padding: 44px 36px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow:
+      0 20px 60px rgba(30, 58, 95, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    text-align: center;
+    animation: cardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+  }
+
+  .lock-icon {
+    width: 56px; height: 56px;
+    margin: 0 auto 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px rgba(30, 58, 95, 0.25);
+  }
+  .lock-icon svg { width: 28px; height: 28px; stroke: white; }
+
+  .password-card h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .password-card .subtitle {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-bottom: 26px;
+  }
+
+  .password-input-wrap { position: relative; margin-bottom: 14px; }
+  #passwordInput {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border-2);
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--text);
+    outline: none;
+    transition: all 0.25s ease;
+    letter-spacing: 0.05em;
+  }
+  #passwordInput:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 4px rgba(74, 139, 142, 0.12);
+    background: white;
+  }
+
+  .unlock-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.98rem;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(30, 58, 95, 0.2);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .unlock-btn:hover  { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(30, 58, 95, 0.28); }
+  .unlock-btn:active { transform: translateY(0); }
+
+  .error-msg {
+    color: #C0392B;
+    background: rgba(192, 57, 43, 0.08);
+    border: 1px solid rgba(192, 57, 43, 0.15);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-top: 14px;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  .error-msg.show { opacity: 1; transform: translateY(0); }
+
+  .shake { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  /* ===== APP LAYOUT ===== */
+  .app {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease;
+  }
+  .app.active { opacity: 1; visibility: visible; }
+
+  /* Header */
+  .header {
+    padding: 16px 28px 12px;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+    flex-shrink: 0;
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .header-titles { min-width: 0; }
+  .course-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--teal);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .tutorial-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+    margin-top: 2px;
+  }
+  .slide-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text-2);
+    background: rgba(255, 255, 255, 0.6);
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    white-space: nowrap;
+  }
+  .slide-counter b { color: var(--navy); font-weight: 600; }
+
+  .progress-bar {
+    height: 4px;
+    background: rgba(30, 58, 95, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal) 0%, var(--navy) 100%);
+    width: 0%;
+    border-radius: 999px;
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Slide area */
+  .slide-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .slide {
+    width: 100%;
+    max-width: 880px;
+    max-height: 100%;
+    overflow-y: auto;
+    background: var(--card);
+    border-radius: 24px;
+    padding: 36px 40px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    position: relative;
+    animation: slideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-2) transparent;
+  }
+  .slide::-webkit-scrollbar { width: 6px; }
+  .slide::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 999px; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .slide.fade-out {
+    animation: slideOut 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  @keyframes slideOut {
+    to { opacity: 0; transform: translateY(-10px); }
+  }
+
+  /* Tags */
+  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 11px;
+    border-radius: 999px;
+  }
+  .tag-q {
+    background: var(--navy);
+    color: white;
+  }
+  .tag-a {
+    background: var(--teal);
+    color: white;
+  }
+  .tag-topic {
+    background: var(--accent-soft);
+    color: var(--navy);
+    border: 1px solid #C6DCDE;
+  }
+  .tag-clo {
+    background: rgba(30, 58, 95, 0.08);
+    color: var(--navy);
+    border: 1px solid rgba(30, 58, 95, 0.15);
+  }
+
+  /* Question slide */
+  .q-label {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .q-number {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+  .q-context {
+    background: var(--card-2);
+    border-left: 3px solid var(--teal);
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+  .q-body {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .q-body em { color: var(--teal); font-style: normal; font-weight: 600; }
+
+  /* Answer slide */
+  .a-number {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--teal);
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  .step {
+    margin-bottom: 18px;
+    padding-left: 14px;
+    border-left: 2px solid var(--accent-soft);
+    transition: border-color 0.25s ease;
+  }
+  .step:hover { border-color: var(--teal); }
+
+  .step-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .step-num {
+    width: 26px; height: 26px;
+    background: var(--navy);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .step-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 1rem;
+  }
+  .step-body {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--text-2);
+    padding-left: 36px;
+  }
+  .step-body p { margin: 4px 0; }
+
+  mjx-container[display="true"] {
+    margin: 8px 0 !important;
+  }
+
+  .explain-box {
+    background: var(--card-2);
+    border: 1px dashed var(--border-2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-top: 8px;
+    font-size: 0.92rem;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .explain-box::before {
+    content: "💡 Simple explanation";
+    display: block;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .final-answer {
+    margin-top: 22px;
+    background: var(--answer-bg);
+    border: 1.5px solid var(--answer-border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    position: relative;
+  }
+  .final-answer::before {
+    content: "Final Answer";
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--teal);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .final-answer .fa-content {
+    font-size: 1.05rem;
+    color: var(--navy);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* Intro / outro slides */
+  .intro-slide { text-align: center; padding: 40px 30px; }
+  .intro-slide .intro-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    color: var(--teal);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .intro-slide h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .intro-slide .intro-sub {
+    font-size: 1.05rem;
+    color: var(--text-2);
+    max-width: 520px;
+    margin: 0 auto 26px;
+    line-height: 1.6;
+  }
+  .intro-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    max-width: 580px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .intro-list .pill {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: var(--text-2);
+  }
+  .intro-list .pill b { color: var(--navy); font-family: 'Plus Jakarta Sans'; }
+
+  .end-slide .check-circle {
+    width: 72px; height: 72px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--navy) 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 30px rgba(74, 139, 142, 0.3);
+  }
+  .end-slide .check-circle svg { width: 36px; height: 36px; stroke: white; }
+
+  /* Footer Nav */
+  .footer {
+    flex-shrink: 0;
+    padding: 14px 28px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--navy);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+  .nav-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--teal);
+  }
+  .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .nav-btn.primary {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color: white;
+    border-color: transparent;
+  }
+  .nav-btn svg { width: 16px; height: 16px; }
+
+  .indicators {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    max-width: 60%;
+    overflow-x: auto;
+    padding: 4px;
+    scrollbar-width: none;
+  }
+  .indicators::-webkit-scrollbar { display: none; }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border-2);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+  }
+  .dot:hover { background: var(--teal-2); transform: scale(1.3); }
+  .dot.active {
+    background: var(--navy);
+    width: 24px;
+    border-radius: 999px;
+  }
+  .dot.answered { background: var(--teal); }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .header { padding: 12px 16px 10px; }
+    .tutorial-title { font-size: 1rem; }
+    .slide-area { padding: 12px; }
+    .slide { padding: 24px 22px; border-radius: 18px; }
+    .q-number { font-size: 1.5rem; }
+    .q-body { font-size: 1.02rem; }
+    .a-number { font-size: 1.3rem; }
+    .step-body { padding-left: 0; margin-top: 8px; }
+    .step { padding-left: 12px; }
+    .footer { padding: 10px 14px 14px; gap: 8px; }
+    .nav-btn { padding: 9px 14px; font-size: 0.86rem; }
+    .indicators { max-width: 40%; }
+    .intro-slide h1 { font-size: 1.7rem; }
+    .password-card { padding: 32px 24px; }
+  }
+
+  @media (max-width: 420px) {
+    .nav-btn span.label { display: none; }
+    .nav-btn { padding: 9px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating math symbols background -->
+<div class="float-bg" id="floatBg"></div>
+
+<!-- PASSWORD SCREEN -->
+<div class="password-screen" id="passwordScreen">
+  <div class="password-card" id="passwordCard">
+    <div class="lock-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <h1>Tutorial 9</h1>
+    <p class="subtitle">Special Probability Distributions · PRP 1046</p>
+    <div class="password-input-wrap">
+      <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off" />
+    </div>
+    <button class="unlock-btn" id="unlockBtn">Unlock Tutorial</button>
+    <div class="error-msg" id="errorMsg">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <div class="header-titles">
+        <div class="course-title">PRP 1046 · Mathematics II</div>
+        <div class="tutorial-title">Tutorial 9 — Special Probability Distributions</div>
+      </div>
+      <div class="slide-counter"><b id="curIdx">1</b> / <span id="totIdx">1</span></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </header>
+
+  <!-- SLIDE AREA -->
+  <main class="slide-area" id="slideArea"></main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <button class="nav-btn" id="prevBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      <span class="label">Previous</span>
+    </button>
+    <div class="indicators" id="indicators"></div>
+    <button class="nav-btn primary" id="nextBtn">
+      <span class="label">Next</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </footer>
+</div>
+
+<script>
+/* ============================================
+   FLOATING BACKGROUND
+   ============================================ */
+(function(){
+  const symbols = ['π','Σ','∫','λ','μ','σ','∞','√','P(X)','e','≈','≥','C(n,k)'];
+  const wrap = document.getElementById('floatBg');
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span');
+    s.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    s.style.left = (Math.random() * 100) + '%';
+    s.style.top = (100 + Math.random() * 40) + '%';
+    s.style.fontSize = (2 + Math.random() * 3) + 'rem';
+    s.style.animationDuration = (22 + Math.random() * 20) + 's';
+    s.style.animationDelay = (Math.random() * -40) + 's';
+    wrap.appendChild(s);
+  }
+})();
+
+/* ============================================
+   PASSWORD GATE
+   ============================================ */
+const PASSWORD = 'An15120467##';
+const pwScreen = document.getElementById('passwordScreen');
+const pwInput  = document.getElementById('passwordInput');
+const pwCard   = document.getElementById('passwordCard');
+const unlockBtn = document.getElementById('unlockBtn');
+const errorMsg = document.getElementById('errorMsg');
+const app = document.getElementById('app');
+
+function tryUnlock() {
+  if (pwInput.value === PASSWORD) {
+    pwScreen.style.transition = 'opacity 0.5s ease, visibility 0.5s';
+    pwScreen.style.opacity = '0';
+    setTimeout(() => {
+      pwScreen.style.display = 'none';
+      app.classList.add('active');
+      initSlides();
+    }, 500);
+  } else {
+    errorMsg.classList.add('show');
+    pwCard.classList.add('shake');
+    pwInput.value = '';
+    setTimeout(() => pwCard.classList.remove('shake'), 400);
+  }
+}
+unlockBtn.addEventListener('click', tryUnlock);
+pwInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') tryUnlock();
+  if (errorMsg.classList.contains('show')) errorMsg.classList.remove('show');
+});
+window.addEventListener('load', () => pwInput.focus());
+
+/* ============================================
+   SLIDE DATA
+   ============================================ */
+const slides = [
+  /* ---------- INTRO ---------- */
+  { type: 'intro' },
+
+  /* ===================================================
+     QUESTION 1 — Distribution Identification (6 parts)
+     =================================================== */
+  { type: 'question', number: 'Q1(a)', topic: 'Distribution Identification', clo: 'CLO 1',
+    context: 'What is <em>X</em>?',
+    body: 'The event of a loan application being approved or rejected out of 200 applicants.' },
+  { type: 'answer', number: 'Q1(a)',
+    steps: [
+      { title: 'Identify the experiment type', body: 'There is a <b>fixed number of trials</b> (200 applicants) and only <b>two outcomes</b> per trial (approved or rejected).' }
+    ],
+    explanation: 'Binomial is used when trials are fixed in number and each trial has just two outcomes (success/failure).',
+    finalAnswer: 'Binomial Distribution' },
+
+  { type: 'question', number: 'Q1(b)', topic: 'Distribution Identification', clo: 'CLO 1',
+    context: 'What is <em>X</em>?',
+    body: 'The event of the number of website visits per minute.' },
+  { type: 'answer', number: 'Q1(b)',
+    steps: [
+      { title: 'Identify the experiment type', body: 'We are <b>counting events</b> happening within a fixed time interval (per minute), with no upper limit.' }
+    ],
+    explanation: 'Poisson is used when we count the number of events occurring in a fixed time or space.',
+    finalAnswer: 'Poisson Distribution' },
+
+  { type: 'question', number: 'Q1(c)', topic: 'Distribution Identification', clo: 'CLO 1',
+    context: 'What is <em>X</em>?',
+    body: 'The weight of packaged products in a factory.' },
+  { type: 'answer', number: 'Q1(c)',
+    steps: [
+      { title: 'Identify the experiment type', body: 'Weight is a <b>continuous measurement</b> — it can take any value within a range.' }
+    ],
+    explanation: 'Normal distribution is used for continuous measurements like weight, height, or temperature.',
+    finalAnswer: 'Normal Distribution' },
+
+  { type: 'question', number: 'Q1(d)', topic: 'Distribution Identification', clo: 'CLO 1',
+    context: 'What is <em>X</em>?',
+    body: 'The blood pressure levels among adults in a population.' },
+  { type: 'answer', number: 'Q1(d)',
+    steps: [
+      { title: 'Identify the experiment type', body: 'Blood pressure is a <b>continuous variable</b> measured in a population.' }
+    ],
+    explanation: 'Most natural human measurements (height, weight, blood pressure) follow a Normal distribution.',
+    finalAnswer: 'Normal Distribution' },
+
+  { type: 'question', number: 'Q1(e)', topic: 'Distribution Identification', clo: 'CLO 1',
+    context: 'What is <em>X</em>?',
+    body: 'The event of the number of earthquakes occurring in a region per year.' },
+  { type: 'answer', number: 'Q1(e)',
+    steps: [
+      { title: 'Identify the experiment type', body: 'We are <b>counting rare events</b> per fixed time period (per year).' }
+    ],
+    explanation: 'Poisson is the standard for counting rare events over a fixed time or area.',
+    finalAnswer: 'Poisson Distribution' },
+
+  { type: 'question', number: 'Q1(f)', topic: 'Distribution Identification', clo: 'CLO 1',
+    context: 'What is <em>X</em>?',
+    body: 'The event of patients responding positively or negatively to a treatment in a clinical trial.' },
+  { type: 'answer', number: 'Q1(f)',
+    steps: [
+      { title: 'Identify the experiment type', body: 'Fixed number of patients, and each patient has only <b>two possible outcomes</b> (positive / negative).' }
+    ],
+    explanation: 'Binomial fits any scenario with fixed trials and two outcomes per trial.',
+    finalAnswer: 'Binomial Distribution' },
+
+  /* ===================================================
+     QUESTION 2 — Continuity Correction (3 parts)
+     =================================================== */
+  { type: 'question', number: 'Q2(a)', topic: 'Continuity Correction', clo: 'CLO 2',
+    context: 'Perform the continuity correction for the following probabilities if a discrete probability distribution is approximated using a continuous probability distribution.',
+    body: 'Find the corrected form of $P(X = 15)$.' },
+  { type: 'answer', number: 'Q2(a)',
+    steps: [
+      { title: 'Apply the rule for $P(X = k)$', body: 'For a single discrete value, expand it into an interval of width 1 around $k$:' },
+      { title: 'Substitute $k = 15$', body: '$$P(X=15) = P(15 - 0.5 < X < 15 + 0.5)$$' }
+    ],
+    explanation: 'Discrete values are points; continuous values are intervals. We "spread" the point $k$ into the interval $(k-0.5, k+0.5)$.',
+    finalAnswer: '$$P(X=15) = P(14.5 < X < 15.5)$$' },
+
+  { type: 'question', number: 'Q2(b)', topic: 'Continuity Correction', clo: 'CLO 2',
+    context: 'Apply continuity correction.',
+    body: 'Find the corrected form of $P(X \\geq 10)$.' },
+  { type: 'answer', number: 'Q2(b)',
+    steps: [
+      { title: 'Apply the rule for $P(X \\geq k)$', body: 'The symbol $\\geq$ <b>includes</b> the value $k$, so shift the boundary <b>down</b> by 0.5:' },
+      { title: 'Substitute $k = 10$', body: '$$P(X \\geq 10) = P(X > 10 - 0.5)$$' }
+    ],
+    explanation: 'When the inequality includes equality ($\\geq$), include that value by going $0.5$ below it.',
+    finalAnswer: '$$P(X \\geq 10) = P(X > 9.5)$$' },
+
+  { type: 'question', number: 'Q2(c)', topic: 'Continuity Correction', clo: 'CLO 2',
+    context: 'Apply continuity correction.',
+    body: 'Find the corrected form of $P(7 < X \\leq 11)$.' },
+  { type: 'answer', number: 'Q2(c)',
+    steps: [
+      { title: 'Treat each bound separately', body: 'Left side: $X > 7$ excludes 7, so shift up by 0.5 → $X > 7.5$.<br>Right side: $X \\leq 11$ includes 11, so shift up by 0.5 → $X < 11.5$.' },
+      { title: 'Combine both bounds', body: '$$P(7 < X \\leq 11) = P(7 + 0.5 < X < 11 + 0.5)$$' }
+    ],
+    explanation: 'Decide for each side: include the boundary? push outward. Exclude the boundary? push inward.',
+    finalAnswer: '$$P(7 < X \\leq 11) = P(7.5 < X < 11.5)$$' },
+
+  /* ===================================================
+     QUESTION 3 — Binomial (spicy food, p = 0.09, n = 10)
+     =================================================== */
+  { type: 'question', number: 'Q3(a)', topic: 'Binomial Distribution', clo: 'CLO 2',
+    context: '9% of people in Country A said they eat spicy food every day. A sample of 10 people is taken.',
+    body: 'Find the probability that <b>exactly 4</b> of them eat spicy food everyday.' },
+  { type: 'answer', number: 'Q3(a)',
+    steps: [
+      { title: 'Identify the formula', body: 'This is Binomial with $n = 10$, $p = 0.09$, $q = 0.91$.<br>$$P(X = x) = \\binom{n}{x} p^{x} q^{n-x}$$' },
+      { title: 'Substitute $x = 4$', body: '$$P(X = 4) = \\binom{10}{4}(0.09)^{4}(0.91)^{6}$$' },
+      { title: 'Simplify', body: '$$P(X = 4) = 210 \\times 0.00006561 \\times 0.5679 \\approx 0.0078$$' }
+    ],
+    explanation: 'We use the Binomial formula because there are fixed trials ($n = 10$) and only two outcomes (eats spicy / doesn\'t).',
+    finalAnswer: '$$P(X = 4) \\approx 0.0078$$' },
+
+  { type: 'question', number: 'Q3(b)', topic: 'Binomial Distribution', clo: 'CLO 2',
+    context: '$n = 10$, $p = 0.09$.',
+    body: 'Find the probability that <b>at most 2</b> of them eat spicy food everyday.' },
+  { type: 'answer', number: 'Q3(b)',
+    steps: [
+      { title: 'Translate "at most 2"', body: '"At most 2" means $X \\leq 2$:<br>$$P(X \\leq 2) = P(X=0) + P(X=1) + P(X=2)$$' },
+      { title: 'Substitute each term', body: '$$\\binom{10}{0}(0.09)^{0}(0.91)^{10} + \\binom{10}{1}(0.09)^{1}(0.91)^{9} + \\binom{10}{2}(0.09)^{2}(0.91)^{8}$$' },
+      { title: 'Compute and add', body: '$$= 0.3894 + 0.3851 + 0.1714$$' }
+    ],
+    explanation: '"At most $k$" means add $P(X = 0)$ up to $P(X = k)$.',
+    finalAnswer: '$$P(X \\leq 2) = 0.9459$$' },
+
+  { type: 'question', number: 'Q3(c)', topic: 'Binomial Distribution', clo: 'CLO 2',
+    context: '$n = 10$, $p = 0.09$.',
+    body: 'Find the probability that <b>none</b> of them eat spicy foods everyday.' },
+  { type: 'answer', number: 'Q3(c)',
+    steps: [
+      { title: '"None" means $X = 0$', body: '$$P(\\text{none}) = P(X = 0) = \\binom{10}{0}(0.09)^{0}(0.91)^{10}$$' },
+      { title: 'Simplify', body: '$$P(X = 0) = 1 \\times 1 \\times (0.91)^{10}$$' }
+    ],
+    explanation: 'Anything to the power of 0 is 1, and $\\binom{n}{0} = 1$, so this simplifies to $q^{n}$.',
+    finalAnswer: '$$P(X = 0) = 0.3894$$' },
+
+  /* ===================================================
+     QUESTION 4 — Binomial (canned coffee, ratio 40:30:60:70)
+     =================================================== */
+  { type: 'question', number: 'Q4(a)', topic: 'Binomial Distribution', clo: 'CLO 2',
+    context: 'The proportion of people purchasing Latte, Original, Mocha and "Tarik" canned coffee is in the ratio $40:30:60:70$. A sample of 30 people is randomly selected.',
+    body: 'Find the probability that <b>exactly 7</b> of them purchased <b>Latte</b> coffee.' },
+  { type: 'answer', number: 'Q4(a)',
+    steps: [
+      { title: 'Find $p$ from the ratio', body: 'Total = $40 + 30 + 60 + 70 = 200$.<br>$p = \\dfrac{40}{200} = 0.2$, so $q = 0.8$.' },
+      { title: 'Set up the formula', body: 'With $n = 30$, $p = 0.2$, $q = 0.8$:<br>$$P(X = 7) = \\binom{30}{7}(0.2)^{7}(0.8)^{23}$$' },
+      { title: 'Simplify', body: '$$P(X = 7) \\approx 0.1538$$' }
+    ],
+    explanation: 'When the question only cares about ONE coffee type, treat "buy that coffee" as success and "buy any other" as failure.',
+    finalAnswer: '$$P(X = 7) \\approx 0.1538$$' },
+
+  { type: 'question', number: 'Q4(b)', topic: 'Binomial Distribution', clo: 'CLO 2',
+    context: 'Ratio $40:30:60:70$, $n = 30$.',
+    body: 'Find the probability that <b>at least 3</b> of them purchased <b>Original</b> coffee.' },
+  { type: 'answer', number: 'Q4(b)',
+    steps: [
+      { title: 'Find $p$ for Original', body: '$p = \\dfrac{30}{200} = 0.15$, so $q = 0.85$.' },
+      { title: 'Use the complement', body: '"At least 3" = $P(X \\geq 3) = 1 - P(X = 0) - P(X = 1) - P(X = 2)$' },
+      { title: 'Substitute and simplify', body: '$$= 1 - 0.0076 - 0.0404 - 0.1034$$' }
+    ],
+    explanation: 'Use the <b>complement rule</b> when "at least $k$" would require many terms — it\'s usually faster.',
+    finalAnswer: '$$P(X \\geq 3) = 0.8486$$' },
+
+  { type: 'question', number: 'Q4(c)', topic: 'Binomial Distribution', clo: 'CLO 2',
+    context: 'Ratio $40:30:60:70$, $n = 30$.',
+    body: 'Find the probability that <b>7 to 9 people</b> purchased <b>Mocha</b> coffee.' },
+  { type: 'answer', number: 'Q4(c)',
+    steps: [
+      { title: 'Find $p$ for Mocha', body: '$p = \\dfrac{60}{200} = 0.3$, so $q = 0.7$.' },
+      { title: 'Translate "7 to 9"', body: '$P(7 \\leq X \\leq 9) = P(X = 7) + P(X = 8) + P(X = 9)$' },
+      { title: 'Substitute each term', body: '$$\\binom{30}{7}(0.3)^{7}(0.7)^{23} + \\binom{30}{8}(0.3)^{8}(0.7)^{22} + \\binom{30}{9}(0.3)^{9}(0.7)^{21}$$' },
+      { title: 'Simplify', body: '$$= 0.1219 + 0.1501 + 0.1573$$' }
+    ],
+    explanation: '"$a$ to $b$" means add all the probabilities from $X = a$ up to $X = b$.',
+    finalAnswer: '$$P(7 \\leq X \\leq 9) = 0.4293$$' },
+
+  { type: 'question', number: 'Q4(d)', topic: 'Binomial Distribution', clo: 'CLO 2',
+    context: 'Ratio $40:30:60:70$, $n = 30$.',
+    body: 'Find the probability that <b>12 to 15 people</b> purchased <b>"Tarik"</b> coffee.' },
+  { type: 'answer', number: 'Q4(d)',
+    steps: [
+      { title: 'Find $p$ for "Tarik"', body: '$p = \\dfrac{70}{200} = 0.35$, so $q = 0.65$.' },
+      { title: 'Translate "12 to 15"', body: '$P(12 \\leq X \\leq 15) = P(X=12) + P(X=13) + P(X=14) + P(X=15)$' },
+      { title: 'Substitute and simplify', body: '$$= 0.1254 + 0.0935 + 0.0611 + 0.0351$$' }
+    ],
+    explanation: 'Same rule as before: add up the probabilities from the smallest to the largest value in the range.',
+    finalAnswer: '$$P(12 \\leq X \\leq 15) = 0.3151$$' },
+
+  /* ===================================================
+     QUESTION 5 — Poisson (find λ)
+     =================================================== */
+  { type: 'question', number: 'Q5(a)', topic: 'Poisson Distribution', clo: 'CLO 2',
+    context: 'If $X \\sim P_{0}(\\lambda)$ and $P(X = 0) = 0.22313$.',
+    body: 'Find the value of $\\lambda$.' },
+  { type: 'answer', number: 'Q5(a)',
+    steps: [
+      { title: 'Write the Poisson formula', body: '$$P(X = x) = \\dfrac{e^{-\\lambda} \\lambda^{x}}{x!}$$' },
+      { title: 'Substitute $x = 0$', body: '$$P(X = 0) = \\dfrac{e^{-\\lambda} \\lambda^{0}}{0!} = e^{-\\lambda}$$<br>So $e^{-\\lambda} = 0.22313$.' },
+      { title: 'Take $\\ln$ on both sides', body: '$$-\\lambda = \\ln(0.22313) = -1.5$$' }
+    ],
+    explanation: 'When $x = 0$, the formula collapses to $e^{-\\lambda}$, making it easy to solve for $\\lambda$ using $\\ln$.',
+    finalAnswer: '$$\\lambda = 1.5$$' },
+
+  { type: 'question', number: 'Q5(b)', topic: 'Poisson Distribution', clo: 'CLO 2',
+    context: 'With $\\lambda = 1.5$ from part (a).',
+    body: 'Find $P(X = 3)$.' },
+  { type: 'answer', number: 'Q5(b)',
+    steps: [
+      { title: 'Use the Poisson formula', body: '$$P(X = 3) = \\dfrac{e^{-1.5}(1.5)^{3}}{3!}$$' },
+      { title: 'Compute each part', body: '$e^{-1.5} = 0.2231$, $(1.5)^{3} = 3.375$, $3! = 6$.' },
+      { title: 'Simplify', body: '$$P(X = 3) = \\dfrac{0.2231 \\times 3.375}{6}$$' }
+    ],
+    explanation: 'Just plug $\\lambda$ and $x$ into the Poisson formula and simplify.',
+    finalAnswer: '$$P(X = 3) \\approx 0.1255$$' },
+
+  /* ===================================================
+     QUESTION 6 — Poisson (student absences)
+     =================================================== */
+  { type: 'question', number: 'Q6(a)', topic: 'Poisson Distribution', clo: 'CLO 2',
+    context: 'An average of 2 students were absent per day during the second semester.',
+    body: 'Find the probability that <b>5 students will be absent on a given 2-day period</b>.' },
+  { type: 'answer', number: 'Q6(a)',
+    steps: [
+      { title: 'Scale $\\lambda$ for the new period', body: '$\\lambda = 2$ per day, so for 2 days: $\\lambda = 2 \\times 2 = 4$.' },
+      { title: 'Apply the Poisson formula', body: '$$P(X = 5) = \\dfrac{e^{-4}(4)^{5}}{5!} = \\dfrac{0.0183 \\times 1024}{120}$$' }
+    ],
+    explanation: '$\\lambda$ scales linearly with time. Doubling the time period doubles the average.',
+    finalAnswer: '$$P(X = 5) \\approx 0.1563$$' },
+
+  { type: 'question', number: 'Q6(b)', topic: 'Poisson Distribution', clo: 'CLO 2',
+    context: 'An average of 2 students absent per day.',
+    body: 'Find the probability that <b>5 students will be absent in a week</b>.' },
+  { type: 'answer', number: 'Q6(b)',
+    steps: [
+      { title: 'Scale $\\lambda$ for a week', body: '$\\lambda = 2$ per day, so for 7 days: $\\lambda = 2 \\times 7 = 14$.' },
+      { title: 'Apply the Poisson formula', body: '$$P(X = 5) = \\dfrac{e^{-14}(14)^{5}}{5!}$$' },
+      { title: 'Compute', body: '$$P(X = 5) = \\dfrac{8.316 \\times 10^{-7} \\times 537824}{120}$$' }
+    ],
+    explanation: 'Same scaling rule. Note the answer is much smaller — getting only 5 is unlikely when we expect 14.',
+    finalAnswer: '$$P(X = 5) \\approx 0.0037$$' },
+
+  /* ===================================================
+     QUESTION 7 — Complaints (mean + Poisson)
+     =================================================== */
+  { type: 'question', number: 'Q7(a)', topic: 'Mean from Frequency Table', clo: 'CLO 2',
+    context: 'Table 1 shows complaints filed by customers in one year to MT Net.<br><br><b>Complaints (x)</b>: 0, 1, 2, 3, 4, 5<br><b>Customers (f)</b>: 10, 10, 11, 4, 3, 2',
+    body: 'Find the <b>mean</b> number of complaints filed by a customer in one year.' },
+  { type: 'answer', number: 'Q7(a)',
+    steps: [
+      { title: 'Use the mean formula', body: '$$\\bar{x} = \\dfrac{\\sum xf}{\\sum f}$$' },
+      { title: 'Compute $\\sum xf$', body: '$(0)(10) + (1)(10) + (2)(11) + (3)(4) + (4)(3) + (5)(2)$<br>$= 0 + 10 + 22 + 12 + 12 + 10 = 66$' },
+      { title: 'Compute $\\sum f$ and divide', body: '$\\sum f = 10 + 10 + 11 + 4 + 3 + 2 = 40$<br>$$\\bar{x} = \\dfrac{66}{40}$$' }
+    ],
+    explanation: 'The mean from a frequency table is the weighted average — multiply each value by its frequency, then divide by the total frequency.',
+    finalAnswer: '$$\\bar{x} = 1.65$$' },
+
+  { type: 'question', number: 'Q7(b)(i)', topic: 'Poisson Distribution', clo: 'CLO 2',
+    context: 'Complaints follow Poisson with $\\lambda = 1.65$.',
+    body: 'Find the probability that a customer files a complaint <b>less than 3 times a year</b>.' },
+  { type: 'answer', number: 'Q7(b)(i)',
+    steps: [
+      { title: 'Translate "less than 3"', body: '$P(X < 3) = P(X = 0) + P(X = 1) + P(X = 2)$' },
+      { title: 'Substitute into Poisson formula', body: '$$\\dfrac{e^{-1.65}(1.65)^{0}}{0!} + \\dfrac{e^{-1.65}(1.65)^{1}}{1!} + \\dfrac{e^{-1.65}(1.65)^{2}}{2!}$$' },
+      { title: 'Compute and add', body: '$$= 0.1920 + 0.3169 + 0.2614$$' }
+    ],
+    explanation: '"Less than 3" means $X = 0, 1,$ or $2$ — strictly less, so don\'t include 3.',
+    finalAnswer: '$$P(X < 3) = 0.7703$$' },
+
+  { type: 'question', number: 'Q7(b)(ii)', topic: 'Poisson Distribution', clo: 'CLO 2',
+    context: 'Same Poisson, but now consider a 3-year period.',
+    body: 'Find the probability that a customer files a complaint <b>more than 2 times in a 3-year period</b>.' },
+  { type: 'answer', number: 'Q7(b)(ii)',
+    steps: [
+      { title: 'Scale $\\lambda$', body: 'For 3 years: $\\lambda = 1.65 \\times 3 = 4.95$.' },
+      { title: 'Use the complement', body: '$P(X > 2) = 1 - [P(X=0) + P(X=1) + P(X=2)]$' },
+      { title: 'Compute', body: '$$= 1 - 0.0071 - 0.0351 - 0.0868$$' }
+    ],
+    explanation: 'For "more than $k$", subtract from 1 instead of summing many terms.',
+    finalAnswer: '$$P(X > 2) = 0.871$$' },
+
+  /* ===================================================
+     QUESTION 8 — Normal N(100, 25)
+     =================================================== */
+  { type: 'question', number: 'Q8(a)', topic: 'Normal Distribution', clo: 'CLO 2',
+    context: 'If $X \\sim N(100, 25)$, so $\\mu = 100$, $\\sigma^{2} = 25$, $\\sigma = 5$.',
+    body: 'Find $P(X \\geq 104)$.' },
+  { type: 'answer', number: 'Q8(a)',
+    steps: [
+      { title: 'Convert $X$ to $Z$', body: '$$Z = \\dfrac{X - \\mu}{\\sigma} = \\dfrac{104 - 100}{5} = 0.8$$' },
+      { title: 'Rewrite the probability', body: '$$P(X \\geq 104) = P(Z \\geq 0.8)$$' },
+      { title: 'Read from standard normal table', body: 'From the table: $P(Z \\geq 0.8) = 0.2119$' }
+    ],
+    explanation: 'Always standardize first using $Z = \\dfrac{X-\\mu}{\\sigma}$, then look up the table.',
+    finalAnswer: '$$P(X \\geq 104) = 0.2119$$' },
+
+  { type: 'question', number: 'Q8(b)', topic: 'Normal Distribution', clo: 'CLO 2',
+    context: '$X \\sim N(100, 25)$, $\\sigma = 5$.',
+    body: 'Find $P(X < 95)$.' },
+  { type: 'answer', number: 'Q8(b)',
+    steps: [
+      { title: 'Standardize', body: '$$Z = \\dfrac{95 - 100}{5} = -1$$' },
+      { title: 'Use symmetry', body: 'The normal curve is symmetric, so $P(Z < -1) = P(Z > 1) = 0.1587$.' }
+    ],
+    explanation: 'For negative $Z$, use symmetry: $P(Z < -a) = P(Z > a)$.',
+    finalAnswer: '$$P(X < 95) = 0.1587$$' },
+
+  { type: 'question', number: 'Q8(c)', topic: 'Normal Distribution', clo: 'CLO 2',
+    context: '$X \\sim N(100, 25)$, $\\sigma = 5$.',
+    body: 'Find $P(95 \\leq X \\leq 103)$.' },
+  { type: 'answer', number: 'Q8(c)',
+    steps: [
+      { title: 'Standardize both bounds', body: '$Z_{1} = \\dfrac{95 - 100}{5} = -1$<br>$Z_{2} = \\dfrac{103 - 100}{5} = 0.6$' },
+      { title: 'Visualize the area', body: 'We need the area between $Z = -1$ and $Z = 0.6$.' },
+      { title: 'Use the complement of the two tails', body: '$$P(-1 \\leq Z \\leq 0.6) = 1 - P(Z < -1) - P(Z > 0.6)$$<br>$$= 1 - 0.1587 - 0.2743$$' }
+    ],
+    explanation: 'When the range straddles the mean, the easiest way is: $1 - (\\text{left tail}) - (\\text{right tail})$.',
+    finalAnswer: '$$P(95 \\leq X \\leq 103) = 0.5670$$' },
+
+  { type: 'question', number: 'Q8(d)', topic: 'Normal Distribution', clo: 'CLO 2',
+    context: '$X \\sim N(100, 25)$, $\\sigma = 5$.',
+    body: 'Find $P(90 < X < 100)$.' },
+  { type: 'answer', number: 'Q8(d)',
+    steps: [
+      { title: 'Standardize', body: '$Z_{1} = \\dfrac{90 - 100}{5} = -2$<br>$Z_{2} = \\dfrac{100 - 100}{5} = 0$' },
+      { title: 'Recognize $Z = 0$ is the mean', body: 'The area from $Z = -2$ to $Z = 0$ is half the curve minus the left tail beyond $-2$.' },
+      { title: 'Calculate', body: '$$P(-2 < Z < 0) = 0.5 - P(Z < -2) = 0.5 - 0.0228$$' }
+    ],
+    explanation: 'The total area to the left (or right) of the mean is always 0.5.',
+    finalAnswer: '$$P(90 < X < 100) = 0.4772$$' },
+
+  /* ===================================================
+     QUESTION 9 — Find k from N(40, 16)
+     =================================================== */
+  { type: 'question', number: 'Q9(a)', topic: 'Finding k from Normal', clo: 'CLO 2',
+    context: 'If $X \\sim N(40, 16)$, so $\\mu = 40$, $\\sigma = 4$.',
+    body: 'Find $k$ if $P(X > k) = 0.35$.' },
+  { type: 'answer', number: 'Q9(a)',
+    steps: [
+      { title: 'Decide which side of the mean', body: '$0.35 < 0.5$, so $k$ is on the <b>right</b> of the mean. $Z$ is positive.' },
+      { title: 'Find $Z$ from the table', body: 'We need $P(Z > z) = 0.35$. From the table, $z \\approx 0.39$.' },
+      { title: 'Convert back to $X$', body: '$$k = \\mu + z\\sigma = 40 + (0.39)(4)$$' }
+    ],
+    explanation: 'If the tail probability is less than 0.5, $k$ is on the right of the mean. Use $k = \\mu + z\\sigma$.',
+    finalAnswer: '$$k = 41.56$$' },
+
+  { type: 'question', number: 'Q9(b)', topic: 'Finding k from Normal', clo: 'CLO 2',
+    context: '$X \\sim N(40, 16)$, $\\sigma = 4$.',
+    body: 'Find $k$ if $P(X > k) = 0.7$.' },
+  { type: 'answer', number: 'Q9(b)',
+    steps: [
+      { title: 'Decide which side', body: '$0.7 > 0.5$, so $k$ is on the <b>left</b> of the mean. $Z$ is negative.' },
+      { title: 'Find $|Z|$ from the table', body: 'We need $P(Z > |z|) = 1 - 0.7 = 0.3$. From the table, $|z| \\approx 0.52$, so $z = -0.52$.' },
+      { title: 'Convert back to $X$', body: '$$k = 40 + (-0.52)(4) = 40 - 2.08$$' }
+    ],
+    explanation: 'If the right-tail probability is more than 0.5, $k$ is on the left. Take the complement to find $|z|$.',
+    finalAnswer: '$$k = 37.92$$' },
+
+  { type: 'question', number: 'Q9(c)', topic: 'Finding k from Normal', clo: 'CLO 2',
+    context: '$X \\sim N(40, 16)$, $\\sigma = 4$.',
+    body: 'Find $k$ if $P(X < k) = 0.25$.' },
+  { type: 'answer', number: 'Q9(c)',
+    steps: [
+      { title: 'Decide which side', body: '$0.25 < 0.5$, so $k$ is on the <b>left</b> of the mean. $Z$ is negative.' },
+      { title: 'Find $|Z|$ from the table', body: '$P(Z < -|z|) = P(Z > |z|) = 0.25$. From the table, $|z| \\approx 0.67$, so $z = -0.67$.' },
+      { title: 'Convert back to $X$', body: '$$k = 40 + (-0.67)(4) = 40 - 2.68$$' }
+    ],
+    explanation: 'For "less than" with probability under 0.5, $k$ is on the left.',
+    finalAnswer: '$$k = 37.32$$' },
+
+  { type: 'question', number: 'Q9(d)', topic: 'Finding k from Normal', clo: 'CLO 2',
+    context: '$X \\sim N(40, 16)$, $\\sigma = 4$.',
+    body: 'Find $k$ if $P(X < k) = 0.65$.' },
+  { type: 'answer', number: 'Q9(d)',
+    steps: [
+      { title: 'Decide which side', body: '$0.65 > 0.5$, so $k$ is on the <b>right</b> of the mean. $Z$ is positive.' },
+      { title: 'Find $Z$ from the table', body: '$P(Z > z) = 1 - 0.65 = 0.35$. From the table, $z \\approx 0.39$.' },
+      { title: 'Convert back to $X$', body: '$$k = 40 + (0.39)(4) = 40 + 1.56$$' }
+    ],
+    explanation: 'For "less than" with probability over 0.5, $k$ is on the right.',
+    finalAnswer: '$$k = 41.56$$' },
+
+  /* ===================================================
+     QUESTION 10 — Find μ and σ²
+     =================================================== */
+  { type: 'question', number: 'Q10', topic: 'Find μ and σ²', clo: 'CLO 2',
+    context: 'The monthly earning for an online business through social media follows a normal distribution.',
+    body: '33% of the online business earns more than RM 824 per month. The probability of earning less than RM 800 per month is $0.0228$.<br><br>Estimate the <b>mean</b> and the <b>variance</b> of this distribution.' },
+  { type: 'answer', number: 'Q10',
+    steps: [
+      { title: 'Set up Equation 1 (RM 824)', body: '$P(X > 824) = 0.33$. From the table, $z = 0.44$.<br>$$\\dfrac{824 - \\mu}{\\sigma} = 0.44 \\implies \\mu + 0.44\\sigma = 824 \\quad (1)$$' },
+      { title: 'Set up Equation 2 (RM 800)', body: '$P(X < 800) = 0.0228$. From the table, $|z| = 2.00$, so $z = -2$.<br>$$\\dfrac{800 - \\mu}{\\sigma} = -2 \\implies \\mu - 2\\sigma = 800 \\quad (2)$$' },
+      { title: 'Solve simultaneously', body: 'Subtract (2) from (1): $2.44\\sigma = 24 \\implies \\sigma = 10$.<br>From (2): $\\mu = 800 + 2(10) = 820$.' }
+    ],
+    explanation: 'Each probability gives one $Z$-equation. Two unknowns ($\\mu$, $\\sigma$) need two equations — solve as a system.',
+    finalAnswer: '$$\\mu = 820, \\quad \\sigma^{2} = 100$$' },
+
+  /* ===================================================
+     QUESTION 11 — Normal approximation to Binomial
+     =================================================== */
+  { type: 'question', number: 'Q11', topic: 'Normal Approx. to Binomial', clo: 'CLO 3',
+    context: 'On a certain social media platform, 1 out of every 5 profiles created is a fake profile.',
+    body: 'What is the probability that, in a random sample of <b>1500 profiles</b>, <b>290 to 330</b> are fake profiles?' },
+  { type: 'answer', number: 'Q11',
+    steps: [
+      { title: 'Check approximation conditions', body: '$n = 1500 > 50$ ✓<br>$p = \\dfrac{1}{5} = 0.2$, which lies in $[0.1, 0.9]$ ✓<br>$np = 1500 \\times 0.2 = 300 > 5$ ✓<br>→ Use Normal approximation.' },
+      { title: 'Find $\\mu$ and $\\sigma^{2}$', body: '$\\mu = np = 300$<br>$\\sigma^{2} = npq = 1500 \\times 0.2 \\times 0.8 = 240$<br>$\\sigma = \\sqrt{240} \\approx 15.49$<br>So $X \\sim N(300, 240)$.' },
+      { title: 'Apply continuity correction', body: '$P(290 \\leq X \\leq 330) = P(289.5 < X < 330.5)$' },
+      { title: 'Standardize', body: '$Z_{1} = \\dfrac{289.5 - 300}{15.49} = -0.68$<br>$Z_{2} = \\dfrac{330.5 - 300}{15.49} = 1.97$' },
+      { title: 'Compute the area', body: '$$P(-0.68 < Z < 1.97) = 1 - 0.2483 - 0.0244$$' }
+    ],
+    explanation: 'When $n$ is large and $p$ is moderate, the Binomial can be approximated by Normal. Always apply continuity correction because Binomial is discrete but Normal is continuous.',
+    finalAnswer: '$$P(290 \\leq X \\leq 330) = 0.7273$$' },
+
+  /* ===================================================
+     QUESTION 12 — Past Year (Poisson + Binomial)
+     =================================================== */
+  { type: 'question', number: 'Q12(a)', topic: 'Past Year — Poisson', clo: 'CLO 3',
+    context: 'The average number of cats found in an area of $20\\ m^{2}$ in Desa Ilmu is 3. Sammy and 5 of her friends plan to catch cats in the entire Desa Ilmu, which is approximately $60\\ m^{2}$.',
+    body: 'Find the probability that <b>at most 2 cats</b> are found in an area of $20\\ m^{2}$. [3 marks]' },
+  { type: 'answer', number: 'Q12(a)',
+    steps: [
+      { title: 'Identify $\\lambda$', body: 'For $20\\ m^{2}$: $\\lambda = 3$.' },
+      { title: 'Translate "at most 2"', body: '$P(X \\leq 2) = P(X = 0) + P(X = 1) + P(X = 2)$' },
+      { title: 'Substitute', body: '$$\\dfrac{e^{-3}(3)^{0}}{0!} + \\dfrac{e^{-3}(3)^{1}}{1!} + \\dfrac{e^{-3}(3)^{2}}{2!}$$' },
+      { title: 'Compute and add', body: '$$= 0.0498 + 0.1494 + 0.2240$$' }
+    ],
+    explanation: '"At most 2" means $X = 0, 1,$ or $2$. Use the Poisson formula for each term.',
+    finalAnswer: '$$P(X \\leq 2) = 0.4232$$' },
+
+  { type: 'question', number: 'Q12(b)', topic: 'Past Year — Poisson + Binomial', clo: 'CLO 3',
+    context: 'Same scenario: 3 cats per $20\\ m^{2}$. Sammy and 5 friends (6 people total) work over the whole $60\\ m^{2}$.',
+    body: 'Find the probability (in <b>percentage</b>) of <b>2 to 5 people</b> having caught <b>exactly 7 cats</b> in the entire Desa Ilmu. [9 marks]' },
+  { type: 'answer', number: 'Q12(b)',
+    steps: [
+      { title: 'Scale $\\lambda$ for $60\\ m^{2}$', body: 'Area ratio: $\\dfrac{60}{20} = 3$, so $\\lambda = 3 \\times 3 = 9$.' },
+      { title: 'Find probability one person catches exactly 7 cats', body: '$$P(X = 7) = \\dfrac{e^{-9}(9)^{7}}{7!} = 0.1171$$' },
+      { title: 'Define a new random variable', body: 'Let $Y$ = number of people (out of 6) who catch exactly 7 cats.<br>Then $Y \\sim B(6, 0.1171)$.' },
+      { title: 'Translate "2 to 5"', body: '$P(2 \\leq Y \\leq 5) = P(Y=2) + P(Y=3) + P(Y=4) + P(Y=5)$' },
+      { title: 'Substitute Binomial values', body: '$$\\binom{6}{2}(0.1171)^{2}(0.8829)^{4} + \\binom{6}{3}(0.1171)^{3}(0.8829)^{3}$$<br>$$+ \\binom{6}{4}(0.1171)^{4}(0.8829)^{2} + \\binom{6}{5}(0.1171)^{5}(0.8829)^{1}$$' },
+      { title: 'Compute and add', body: '$$\\approx 0.1250 + 0.0221 + 0.0022 + 0.0001 = 0.1494$$' },
+      { title: 'Convert to percentage', body: '$$0.1494 \\times 100\\% \\approx 14.94\\%$$' }
+    ],
+    explanation: 'This is a <b>two-step</b> problem. Step 1: Use Poisson to find the success probability for one person. Step 2: Treat the number of "successful" people as a Binomial with $n = 6$.',
+    finalAnswer: '$$P(2 \\leq Y \\leq 5) \\approx 14.94\\%$$' },
+
+  /* ---------- END ---------- */
+  { type: 'end' }
+];
+
+/* ============================================
+   RENDER
+   ============================================ */
+const slideArea  = document.getElementById('slideArea');
+const indicators = document.getElementById('indicators');
+const prevBtn    = document.getElementById('prevBtn');
+const nextBtn    = document.getElementById('nextBtn');
+const curIdx     = document.getElementById('curIdx');
+const totIdx     = document.getElementById('totIdx');
+const progressFill = document.getElementById('progressFill');
+
+let current = 0;
+let isAnimating = false;
+const visited = new Set();
+
+function buildIndicators() {
+  indicators.innerHTML = '';
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.title = `Slide ${i + 1}`;
+    d.addEventListener('click', () => goTo(i));
+    indicators.appendChild(d);
+  });
+}
+
+function renderSlide(idx) {
+  const s = slides[idx];
+  let html = '';
+
+  if (s.type === 'intro') {
+    html = `
+      <div class="intro-slide">
+        <div class="intro-eyebrow">Welcome</div>
+        <h1>Special Probability Distributions</h1>
+        <p class="intro-sub">An interactive walkthrough of Tutorial 9 — Binomial, Poisson, and Normal distributions with step-by-step solutions and student-friendly explanations.</p>
+        <div class="intro-list">
+          <div class="pill"><b>12</b> Questions</div>
+        </div>
+      </div>`;
+  }
+  else if (s.type === 'end') {
+    html = `
+      <div class="intro-slide end-slide">
+        <div class="check-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="intro-eyebrow">You're all done</div>
+        <h1>Tutorial 9 Complete</h1>
+        <p class="intro-sub">Great job working through Special Probability Distributions! Review any slide using the dots below or the Previous button. Selamat berjaya untuk peperiksaan!</p>
+      </div>`;
+  }
+  else if (s.type === 'question') {
+    html = `
+      <div class="tag-row">
+        <span class="tag tag-q">Question</span>
+        <span class="tag tag-topic">${s.topic}</span>
+        <span class="tag tag-clo">${s.clo}</span>
+      </div>
+      <div class="q-label">Question</div>
+      <div class="q-number">${s.number}</div>
+      ${s.context ? `<div class="q-context">${s.context}</div>` : ''}
+      <div class="q-body">${s.body}</div>`;
+  }
+  else if (s.type === 'answer') {
+    let stepsHTML = '';
+    s.steps.forEach((st, i) => {
+      stepsHTML += `
+        <div class="step">
+          <div class="step-head">
+            <div class="step-num">${i + 1}</div>
+            <div class="step-title">${st.title}</div>
+          </div>
+          <div class="step-body">${st.body}</div>
+        </div>`;
+    });
+    html = `
+      <div class="tag-row">
+        <span class="tag tag-a">Solution</span>
+      </div>
+      <div class="q-label">Answer</div>
+      <div class="a-number">${s.number}</div>
+      ${stepsHTML}
+      ${s.explanation ? `<div class="explain-box">${s.explanation}</div>` : ''}
+      ${s.finalAnswer ? `<div class="final-answer"><div class="fa-content">${s.finalAnswer}</div></div>` : ''}`;
+  }
+
+  return html;
+}
+
+function showSlide(idx, direction = 0) {
+  if (isAnimating) return;
+  if (idx < 0 || idx >= slides.length) return;
+
+  const old = slideArea.querySelector('.slide');
+
+  const newSlide = document.createElement('div');
+  newSlide.className = 'slide';
+  newSlide.innerHTML = renderSlide(idx);
+
+  if (old) {
+    isAnimating = true;
+    old.classList.add('fade-out');
+    setTimeout(() => {
+      slideArea.innerHTML = '';
+      slideArea.appendChild(newSlide);
+      typesetMath(newSlide);
+      isAnimating = false;
+    }, 230);
+  } else {
+    slideArea.appendChild(newSlide);
+    typesetMath(newSlide);
+  }
+
+  current = idx;
+  visited.add(idx);
+
+  // Update UI
+  curIdx.textContent = idx + 1;
+  totIdx.textContent = slides.length;
+  progressFill.style.width = ((idx + 1) / slides.length * 100) + '%';
+
+  prevBtn.disabled = (idx === 0);
+  nextBtn.disabled = (idx === slides.length - 1);
+
+  // Update indicators
+  const dots = indicators.querySelectorAll('.dot');
+  dots.forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+    d.classList.toggle('answered', visited.has(i) && i !== idx);
+  });
+
+  // Auto-scroll active dot into view
+  const activeDot = dots[idx];
+  if (activeDot) {
+    activeDot.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+}
+
+function typesetMath(el) {
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise([el]).catch(err => console.warn('MathJax:', err));
+  } else {
+    // Retry shortly if MathJax isn't ready yet
+    setTimeout(() => {
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([el]).catch(err => console.warn('MathJax:', err));
+      }
+    }, 400);
+  }
+}
+
+function next() { if (current < slides.length - 1) showSlide(current + 1, 1); }
+function prev() { if (current > 0) showSlide(current - 1, -1); }
+function goTo(i) { if (i !== current) showSlide(i); }
+
+function initSlides() {
+  buildIndicators();
+  showSlide(0);
+}
+
+prevBtn.addEventListener('click', prev);
+nextBtn.addEventListener('click', next);
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (pwScreen.style.display === 'none' || !app.classList.contains('active')) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  }
+});
+
+// Touch (swipe) support
+let touchStartX = 0;
+slideArea.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+slideArea.addEventListener('touchend',   (e) => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); }
+}, { passive: true });
+
+</script>
+</body>
+</html>
